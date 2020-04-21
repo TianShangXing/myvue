@@ -132,11 +132,29 @@
 
 	<section class="featured-block text-center">
 		<div class="container">
-			
-			123123,你好你好你好
-
-
-
+			<table border="1" cellspacing="1">
+				<tr>
+				<th>序号</th>
+				<th>商品名称</th>
+				<th>商品价格</th>
+				<th>购买数量</th>
+				<th>操作</th>
+				</tr>
+				<tr v-for="(i,index) in datalist">
+				<td>{{i.id}}</td>
+				<td>{{i.name}}</td>
+				<td>{{i.price}}</td>
+				<td>
+					<button v-on:click="sub(index)">-</button>
+					{{i.num}}
+					<button v-on:click="add(index)">+</button>
+				</td>
+				<td>
+					<button v-on:click="remove(index)">移除</button>
+				</td>
+				</tr>
+			</table>
+			总额：{{total}}
 		</div>
 	</section>
 	
@@ -165,16 +183,43 @@
 export default {
   data () {
     return {
-      msg: "这是一个变量",
+	  msg: "这是一个变量",
+	  datalist: [
+		  {'id': 1, 'name': 'iphone 8', 'price': 5099, 'num': 3},
+          {'id': 2, 'name': 'iphone xs', 'price': 8699, 'num': 1},
+          {'id': 3, 'name': 'iphone xr', 'price': 6499, 'num': 1},
+	  ]
     }
   },
-  mounted:function(){
 
-   
-  
-},
+  computed: {
+	//总额
+	total(){
+	var total=0;
+	for(let i =0; i<this.datalist.length;i++){
+		total+=this.datalist[i].price*this.datalist[i].num
+	}
+	return '$'+total
+	}
+  },
+
+  mounted: function () {
+	  
+  },
+
   methods:{
+	sub(index) {
+	if (this.datalist[index].num > 0)
+		this.datalist[index].num--;
+	},
 
+	add(index) {
+		this.datalist[index].num++;
+	},
+
+	remove(index) {
+		this.datalist.splice(index, 1)
+	}
      
   }
 }
