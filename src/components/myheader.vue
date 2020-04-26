@@ -85,7 +85,7 @@
                                 </div>
                             </li>
                             <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-                        <li class="nav-item dropdown"><input type="text" /></li>
+                            <li class="nav-item dropdown"><input type="text" /></li>
                             <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-shopping-cart"></i> <span class="badge badge-pill badge-primary">3</span></a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-cart" aria-labelledby="navbarDropdown">
                                     <h6>3 Items <span class="emphasis">$147.00</span></h6>
@@ -125,6 +125,20 @@
                         </ul>
                     </div>
                 </div>
+
+                <div v-if="username==''">
+                    <!-- router-link 适用于移动端 -->
+                    <router-link to="/login">登 录</router-link>
+                    /
+                    <router-link to="/register">注 册</router-link>
+                </div>
+
+                <div v-else>
+                    欢迎您：{{ username }}
+                    &nbsp;&nbsp;
+                    <Button color='red' @click="logout">注 销</Button>
+                </div>
+
             </nav>
 	    </section>
     </div>
@@ -135,18 +149,40 @@ export default {
     // 定义数据
     data() {
         return {
-            
+            // 用户名
+            username: ''
         }
     },
 
     // 钩子方法
     mounted() {
-        
+        // 判断是否登录
+        var uname = localStorage.getItem('username');
+
+        if (uname == null) {
+            // 未登录
+            this.username = '';
+        } else {
+            // 登录
+            this.username = uname;
+        }
     },
 
     // 自定义方法
     methods: {
-        
+        // 注销
+		logout: function () {
+			// 删除username
+			localStorage.removeItem('username')
+
+			// 全量删除 localStorage.clear()
+
+			// 清空
+			this.username = '';
+
+			// 跳转
+			this.$router.push('/login')
+		}
     },
 }
 </script>
