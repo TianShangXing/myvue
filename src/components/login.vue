@@ -55,6 +55,8 @@
 						<td></td>
 						<td>
 							<Button color='green' @click="submit">登录</Button>
+							&emsp;&emsp;
+							<img class="imgcode" src="http://localhost:8000/static/sina.png" @click="sina">
 						</td>
 					</tr>
 				</table>
@@ -114,6 +116,17 @@ export default {
   },
 
   methods:{
+	  // 新浪微博三方登录
+	  sina: function () {
+		// 拼接url
+		let client_id = 1484610767;
+		
+		let url = 'https://api.weibo.com/oauth2/authorize?client_id=' + client_id + '&redirect_uri=http://127.0.0.1:8000/md_admin/weibo';
+
+		// 跳转 站外跳转：window.location.href
+		window.location.href = url;
+	  },
+
 	  // 刷新验证码
   	  changecode:function () {
   		// 生成随机数
