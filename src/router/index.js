@@ -8,6 +8,7 @@ import mytest from '@/components/mytest'
 import test from '@/components/test'
 import register from '@/components/register'
 import login from '@/components/login'
+import myprofile from '@/components/myprofile'
 
 Vue.use(Router)
 
@@ -51,6 +52,11 @@ var routes = [
           path:'/login',
           name:'login',
           component:login
+        },
+        {
+          path:'/myprofile',
+          name:'myprofile',
+          component:myprofile
         },
 ]
 

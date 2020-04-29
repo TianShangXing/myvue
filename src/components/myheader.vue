@@ -2,7 +2,7 @@
     <div>
         <section class="header text-center">
             <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
-                <div class="container"><a class="navbar-brand" href="index.html"><i class="fas fa-shopping-bag primary-color mr-1"></i>美多商城</a>
+                <div class="container"><a class="navbar-brand" href="/"><i class="fas fa-shopping-bag primary-color mr-1"></i>美多商城</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-1" aria-controls="navbar-1" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                     <div class="collapse navbar-collapse pull-xs-right justify-content-end" id="navbar-1">
                         <ul class="navbar-nav mt-2 mt-md-0">
@@ -134,7 +134,7 @@
                 </div>
 
                 <div v-else>
-                    欢迎您：{{ username }}
+                    欢迎您：<a href="/myprofile">{{ username }}</a>
                     &nbsp;&nbsp;
                     <Button color='red' @click="logout">注 销</Button>
                 </div>
@@ -158,11 +158,19 @@ export default {
     mounted() {
         // 接收新浪id route
         var sina_id = this.$route.query.sina_id;
+        // 接收钉钉id
+        var ding_id = this.$route.query.ding_id;
         var user_id = this.$route.query.uid;
 
         if (sina_id) {
             // 自动登录
             localStorage.setItem('username', sina_id);
+            localStorage.setItem('uid', user_id);
+        }
+        
+        if (ding_id) {
+            // 自动登录
+            localStorage.setItem('username', ding_id);
             localStorage.setItem('uid', user_id);
         }
 

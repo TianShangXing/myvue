@@ -55,8 +55,11 @@
 						<td></td>
 						<td>
 							<Button color='green' @click="submit">登录</Button>
+							<!-- 中文空格 &emsp; 英文空格 &nbsp; -->
 							&emsp;&emsp;
 							<img class="imgcode" src="http://localhost:8000/static/sina.png" @click="sina">
+							&emsp;&emsp;
+							<img class="imgcode" src="http://localhost:8000/static/dingding.png" @click="dingding">
 						</td>
 					</tr>
 				</table>
@@ -116,6 +119,18 @@ export default {
   },
 
   methods:{
+	  // 钉钉三方登录
+	  dingding: function () {
+		let appid = 'dingoahmelrgy51wltnjzs';
+		let redirect_uri = 'http://localhost:8000/dingding_back/';
+		
+		// 组装url
+		let url = 'https://oapi.dingtalk.com/connect/qrconnect?appid='+appid+'&response_type=code&scope=snsapi_login&state=STATE&redirect_uri='+redirect_uri;
+		
+		// 进行跳转
+		window.location.href = url;
+	  },
+
 	  // 新浪微博三方登录
 	  sina: function () {
 		// 拼接url
