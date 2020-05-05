@@ -56,7 +56,17 @@ var routes = [
         {
           path:'/myprofile',
           name:'myprofile',
-          component:myprofile
+          component:myprofile,
+          // 拦截器
+          beforeEnter: (to, from, next) => {
+            if (localStorage.getItem('username')){
+              console.log('已登录');
+              next();
+            } else {
+              console.log('未登录');
+              next('/login');
+            }
+          }
         },
 ]
 
