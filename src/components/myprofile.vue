@@ -10,6 +10,10 @@
 			<div class="container">
 				<div>
 					<Avatar :src="src" :width="200" fit="fill"></Avatar>
+					<br>
+					<Button color="red">删除</Button>
+					&emsp;&emsp;
+					<input type="text" /><Button color="blue">创建目录</Button>
 				</div>
 				<table>
 					<tr>
@@ -36,8 +40,8 @@
 							<Button v-show="videosrc" @click="changepic" color='red'>{{ mybutton }}</Button>
 						</td>
 					</tr>
-					<tr>
-						<td class="upload">
+					<tr class="upload">
+						<td>
 							又拍云上传：
 						</td>
 						<td>
@@ -103,7 +107,9 @@ export default {
 	  this.get_token();
 	
 	  // 又拍云上传
+	  // 注册拖拽容器
 	  let upload = document.querySelector('.upload');
+	  // 声明监听事件
 	  upload.addEventListener('dragenter', this.onDrag, false);
 	  upload.addEventListener('dragover', this.onDrag, false);
 	  upload.addEventListener('drop', this.onDrop, false);
@@ -118,6 +124,7 @@ export default {
 	  onDrop (e) {
 		e.stopPropagation();
 		e.preventDefault();
+		// 调用自定义上传方法
 		this.upload_upyun(e.dataTransfer.files);
 	  },
 
@@ -135,10 +142,11 @@ export default {
 			headers: { 'Content-Type': 'multipart/form-data' }
 		} 
 
-		// 上传图片
+		// 发送请求
 		this.axios.post('http://localhost:8000/uploadup/', param, config)
-		.then((response) => {
-			console.log(response)
+		.then((result) => {
+			console.log(result);
+			this.src = 'http://tianshangxing.test.upcdn.net/test.jpg' 
 		})
 	  },
 
@@ -220,6 +228,7 @@ export default {
 </script>
  
 <style>
+/* 类选择器 */
 .upload {
   margin: 100px auto;
   width: 300px;
