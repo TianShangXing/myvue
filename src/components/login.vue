@@ -187,6 +187,7 @@ export default {
 				// 登录成功
 				localStorage.setItem('username', result.data.username);
 				localStorage.setItem('uid', result.data.uid);
+				localStorage.setItem('jwt', result.data.jwt);
 				this.$Message(result.data.message);
 				// 跳转页面
 				this.$router.push('/')

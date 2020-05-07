@@ -30,6 +30,10 @@
 						</td>
 						<td>
 							<input type="file" @change="upload_qiniu">
+							<br>
+							进度展示：{{ load_percent }}
+							<br>
+							<Progress v-show="load_int" :percent='load_int' color="green"><span slot="title">{{ load_int }}</span></Progress>
 						</td>
 					</tr>
 					<tr>
@@ -40,20 +44,12 @@
 							<Button v-show="videosrc" @click="changepic" color='red'>{{ mybutton }}</Button>
 						</td>
 					</tr>
-					<tr class="upload">
+					<tr>
 						<td>
-							又拍云上传：
+							又拍云拖拽上传：
 						</td>
-						<td>
+						<td class="upload">
 							<input type="file" @change="upload_upyun">
-						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td>
-							<video id="video" v-show="videosrc" width="300" height="200" :src="videosrc" controls="controls" autoplay="autoplay"></video>
-							<br>
-							<Button v-show="videosrc" @click="changepic" color='red'>{{ mybutton }}</Button>
 						</td>
 					</tr>
 				</table>
@@ -90,6 +86,10 @@ export default {
 		videosrc: '',
 		// 画中画切换按钮
 	  	mybutton: '进入画中画',
+		// 上传进度展示
+		load_percent: '',
+		// 整型
+		load_int: 0,
     }
   },
 
@@ -104,7 +104,11 @@ export default {
   },
 
   mounted: function () {
+	  // 获取最新token
 	  this.get_token();
+
+	  // 调用用户信息
+	  this.get_userinfo();
 	
 	  // 又拍云上传
 	  // 注册拖拽容器
@@ -116,6 +120,20 @@ export default {
   },
 
   methods:{
+	  // 用户信息接口
+	  get_userinfo: function () {
+		// 发送请求
+		this.axios.get('http://localhost:8000/userinfo/', {params: {
+			uid: localStorage.getItem('uid'),
+			jwt: localStorage.getItem('jwt')
+		}})
+		.then((result) => {
+			console.log(result);
+			this.src = 'http://localhost:8000/static/upload/' + result.data.img;
+		})
+	  },
+
+	  // 监听用户信息接口
 	  onDrag (e) {
 		e.stopPropagation();
 		e.preventDefault();
@@ -166,7 +184,7 @@ export default {
 
 	  get_token: function () {
 		  // 请求后台接口 get -> params  post -> data
-		  this.axios.get('http://127.0.0.1:8000/qiniu/').then((result) =>{
+		  this.axios.get('http://localhost:8000/qiniu/').then((result) =>{
 			  console.log(result);
 			  this.token = result.data.token;
 			  console.log(this.token)
@@ -193,8 +211,22 @@ export default {
 			  method: 'POST',
 			  url: 'http://up-z1.qiniup.com/',
 			  data: param,
-			  timeout: 30000
+			  timeout: 30000,
+			  // 上传过程中的方法
+			  onUploadProgress: (e) => {
+				  // 计算上传百分比
+				  var complete = (e.loader / e.total);
+				  // 处理美化
+				  if (complete < 1) {
+					  this.load_percent = (complete * 100).toFixed(2) + '%';
+					  this.load_int = parseInt((complete * 100).toFixed(2));
+				  }
+			  }
 		  }).then(result => {
+			  // 手动赋值100%
+			  this.load_percent = '100%';
+			  this.load_int = 100;
+
 			  console.log(result);
 			  this.src = config['baseurl'] + result.data.key;
 			  this.videosrc = config['baseurl'] + result.data.key;
@@ -217,10 +249,10 @@ export default {
 		  let config = {headers: {'Content-Type': 'multipart/form-data'}}
 
 		  // 请求后台接口 get -> params  post -> data
-		  this.axios.post('http://127.0.0.1:8000/upload/', param, config)
+		  this.axios.post('http://localhost:8000/upload/', param, config)
 		  .then((result) =>{
 			  console.log(result);
-			  this.src = 'http://127.0.0.1:8000/static/upload/' + result.data.filename;
+			  this.src = 'http://localhost:8000/static/upload/' + result.data.filename;
 		  })
 	  }
   }
