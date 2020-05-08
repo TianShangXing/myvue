@@ -2,12 +2,12 @@
     <div>
         <section class="header text-center">
             <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
-                <div class="container"><a class="navbar-brand" href="/"><i class="fas fa-shopping-bag primary-color mr-1"></i>美多商城</a>
+                <div class="container"><a class="navbar-brand" href="/"><i class="fas fa-shopping-bag primary-color mr-1"></i>{{ $t('m.index') }}</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-1" aria-controls="navbar-1" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                     <div class="collapse navbar-collapse pull-xs-right justify-content-end" id="navbar-1">
                         <ul class="navbar-nav mt-2 mt-md-0">
-                            <li class="nav-item active"><a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a></li>
-                            <li class="nav-item dropdown mega-menu"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Shop </a>
+                            <li class="nav-item active"><a class="nav-link" href="#">{{ $t('m.home') }}<span class="sr-only">(current)</span></a></li>
+                            <li class="nav-item dropdown mega-menu"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ $t('m.shop') }}</a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <div class="container">
                                         <div class="divider"></div>
@@ -73,7 +73,7 @@
                                     </div>
                                 </div>
                             </li>
-                            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pages </a>
+                            <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ $t('m.page') }}</a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown"><a class="dropdown-item" href="index.html">Homepage</a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="catalog.html">Catalog</a>
@@ -84,7 +84,7 @@
 
                                 </div>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                            <li class="nav-item"><a class="nav-link" href="contact.html">{{ $t('m.contact') }}</a></li>
                             <li class="nav-item dropdown"><input type="text" /></li>
                             <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-shopping-cart"></i> <span class="badge badge-pill badge-primary">3</span></a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-cart" aria-labelledby="navbarDropdown">
@@ -134,9 +134,14 @@
                 </div>
 
                 <div v-else>
-                    欢迎您：<a href="/myprofile">{{ username }}</a>
+                    {{ $t('m.welcome' )}}：<a href="/myprofile">{{ username }}</a>
                     &nbsp;&nbsp;
-                    <Button color='red' @click="logout">注 销</Button>
+                    <Button color='red' @click="logout">{{ $t('m.logout') }}</Button>
+                </div>
+
+                <div>
+                    <!-- 开关标签 -->
+                    <h-switch v-model="lang" @change="lang_change">{{ $t('m.changelang') }}</h-switch>
                 </div>
 
             </nav>
@@ -150,12 +155,35 @@ export default {
     data() {
         return {
             // 用户名
-            username: ''
+            username: '',
+            // 开关变量 0:中文 1:英文
+            lang: 0
         }
     },
 
     // 钩子方法
     mounted() {
+        // 判断语言
+        // var lang_locale = localStorage.getItem("lang");
+        // if (lang_locale) {
+        //     this.$i18n.locale = lang_locale;
+        //     if (lang_locale == 'zh') {
+        //         this.lang = 0;
+        //     } else {
+        //         this.lang = 1;
+        //     }
+        // } else {
+        //     this.$i18n.locale = 'zh';
+        //     this.lang = 0;
+        // }
+
+        // 自动判断语言
+        if (navigator.language == 'en') {
+			this.$i18n.locale = "en";
+		} else {
+			this.$i18n.locale = "zh";
+		}
+
         // 接收新浪id route
         var sina_id = this.$route.query.sina_id;
         // 接收钉钉id
@@ -188,6 +216,20 @@ export default {
 
     // 自定义方法
     methods: {
+        // 切换语言
+        lang_change: function () {
+            console.log(this.lang)     
+            if (this.lang == false) {
+                // 中文
+                this.$i18n.locale = "zh";
+                localStorage.setItem("lang",'zh');
+            } else {
+                // 英文
+                this.$i18n.locale = "en";
+                localStorage.setItem("lang",'en');
+            }
+        },
+
         // 注销
 		logout: function () {
 			// 删除username
