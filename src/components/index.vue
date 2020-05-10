@@ -4,25 +4,13 @@
 		<myheader></myheader>
 
 		<div id="carousel" class="carousel slide" data-ride="carousel">
-		
-	
-			<ul class="carousel-indicators">
-				<li data-target="#carousel" data-slide-to="0" class="active"></li>
-				<li data-target="#carousel" data-slide-to="1"></li>
-				<li data-target="#carousel" data-slide-to="2"></li>
-			</ul>
 	
 			<div class="carousel-inner">
 			
 				<!--Text only with background image-->
 				<div class="carousel-item active">
-					<div class="container slide-textonly">
-						<div>
-							<h1>York &amp; Smith</h1>
-							<p class="lead">Spring/Summer 2018 Collection</p>
-							<a href="#" class="btn btn-outline-secondary">View Collection</a>
-						</div>
-					</div>
+					<!-- 幻灯片 -->
+					<Carousel pageTheme="circle" :datas="imgs" @change="changeimg" @click="clickimg"></Carousel>
 				</div>
 				
 				
@@ -162,6 +150,9 @@ export default {
   data () {
     return {
       msg: "这是一个变量",
+	  // 幻灯片图片
+	  imgs: [
+	  ]
     }
   },
   
@@ -172,11 +163,38 @@ export default {
   },
 
   mounted:function(){
-
+	  this.get_carousel();
   },
 
   methods:{
+	  // 获取轮播图接口
+	  get_carousel: function () {
+		  // 发送请求
+		  this.axios.get('http://localhost:8000/getcarousel/').then((result) =>{
 
+		  console.log(result);
+
+		  var mylist = [];
+
+		  // 遍历数组
+		  for(let i=0,l=result.data.length;i<l;i++){
+
+			  mylist.push({title:result.data[i].name, link:result.data[i].src, image:result.data[i].img});
+
+		  }
+		  this.imgs = mylist;
+		});
+	  },
+	  
+	  // 点击幻灯片
+	  clickimg: function (index, data) {
+		  window.location.href = data.link
+	  },
+
+	  // 切换幻灯片
+	  changeimg: function (index, data) {
+		//   console.log(data);
+	  }
      
   }
 }

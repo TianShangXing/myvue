@@ -8,5 +8,6 @@ export const m = {
     page: 'Pages',
     contact: 'Contact',
     welcome: 'Welcome',
-    changelang: 'Chinese/English'
+    changelang: 'Chinese/English',
+    changecol: 'White/Black'
 }

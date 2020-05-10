@@ -1,7 +1,7 @@
 <template>
     <div>
         <section class="header text-center">
-            <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+            <nav class="navbar navbar-expand-lg navbar-custom">
                 <div class="container"><a class="navbar-brand" href="/"><i class="fas fa-shopping-bag primary-color mr-1"></i>{{ $t('m.index') }}</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-1" aria-controls="navbar-1" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                     <div class="collapse navbar-collapse pull-xs-right justify-content-end" id="navbar-1">
@@ -144,6 +144,11 @@
                     <h-switch v-model="lang" @change="lang_change">{{ $t('m.changelang') }}</h-switch>
                 </div>
 
+                <div>
+                    <!-- 开关标签 -->
+                    <h-switch v-model="col" @change="col_change">{{ $t('m.changecol') }}</h-switch>
+                </div>
+
             </nav>
 	    </section>
     </div>
@@ -156,33 +161,27 @@ export default {
         return {
             // 用户名
             username: '',
-            // 开关变量 0:中文 1:英文
-            lang: 0
+            // 语言开关变量 0:中文 1:英文
+            lang: 0,
+            // 颜色开关变量 0:白天模式 1:黑夜模式
+            col: 0
         }
     },
 
     // 钩子方法
     mounted() {
-        // 判断语言
-        // var lang_locale = localStorage.getItem("lang");
-        // if (lang_locale) {
-        //     this.$i18n.locale = lang_locale;
-        //     if (lang_locale == 'zh') {
-        //         this.lang = 0;
-        //     } else {
-        //         this.lang = 1;
-        //     }
-        // } else {
-        //     this.$i18n.locale = 'zh';
-        //     this.lang = 0;
-        // }
+        this.iflang();
+
+        // this.change_back();
+
+        this.col_change();
 
         // 自动判断语言
-        if (navigator.language == 'en') {
-			this.$i18n.locale = "en";
-		} else {
-			this.$i18n.locale = "zh";
-		}
+        // if (navigator.language == 'en') {
+		// 	this.$i18n.locale = "en";
+		// } else {
+		// 	this.$i18n.locale = "zh";
+		// }
 
         // 接收新浪id route
         var sina_id = this.$route.query.sina_id;
@@ -216,9 +215,57 @@ export default {
 
     // 自定义方法
     methods: {
+        // change_back: function () {
+        //     // 获取样式表
+        //     var styles = getComputedStyle(document.documentElement)
+
+        //     // 动态更改
+        //     document.documentElement.style.setProperty("--bg-color", "#292a2d")
+
+        //     // 字体颜色
+  		//     document.documentElement.style.setProperty("--lg-color", "white");
+        // },
+
+        // 切换颜色
+        col_change: function () {
+            // 获取样式表
+            var styles = getComputedStyle(document.documentElement)
+            if (this.col == false) {
+                // 白天
+                // 动态更改
+                document.documentElement.style.setProperty("--bg-color", "white")
+
+                // 字体颜色
+                document.documentElement.style.setProperty("--lg-color", "black");
+            } else {
+                // 黑夜
+                // 动态更改
+                document.documentElement.style.setProperty("--bg-color", "#292a2d")
+
+                // 字体颜色
+                document.documentElement.style.setProperty("--lg-color", "white");
+            }
+        },
+
+        iflang: function () {
+            // 判断语言
+            var lang_locale = localStorage.getItem("lang");
+            if (lang_locale) {
+                this.$i18n.locale = lang_locale;
+                if (lang_locale == 'zh') {
+                    this.lang = 0;
+                } else {
+                    this.lang = 1;
+                }
+            } else {
+                this.$i18n.locale = 'zh';
+                this.lang = 0;
+            }    
+        },
+
         // 切换语言
         lang_change: function () {
-            console.log(this.lang)     
+            // console.log(this.lang) 
             if (this.lang == false) {
                 // 中文
                 this.$i18n.locale = "zh";
