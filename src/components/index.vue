@@ -60,56 +60,26 @@
 		
 		<section class="products text-center">
 			<div class="container">
-				<h3 class="mb-4">Featured Products</h3>
+				<h3 class="mb-4">商品列表</h3>
 				<div class="row">
-					<div class="col-sm-6 col-md-3 col-product">
+					<div v-for="item in goodslist" class="col-sm-6 col-md-3 col-product">
 						<figure>
-							<img class="rounded-corners img-fluid" src="../assets/images/placeholder-product.jpg"	width="240" height="240">
+							<img class="rounded-corners img-fluid" :src="'http://localhost:8000/static/upload/' + item.img"	width="240" height="240">
+							<video class="rounded-corners img-fluid" :src="'http://localhost:8000/static/upload/' + item.video" width="240" height="240" autoplay="autoplay" controls="controls"></video>
 							<figcaption>
 								<div class="thumb-overlay"><a href="item.html" title="More Info">
 									<i class="fas fa-search-plus"></i>
 								</a></div>
 							</figcaption>
 						</figure>
-						<h4><a href="item.html">Product Name</a></h4>
-						<p><span class="emphasis">$19.00</span></p>
+						<h4><a :href="'http://localhost:8080/item?id=' + item.id">{{ item.name }}</a></h4>
+						<p><span class="emphasis">${{ item.price }}</span></p>
 					</div>
-					<div class="col-sm-6 col-md-3 col-product">
-						<figure>
-							<img class="rounded-corners img-fluid" src="../assets/images/placeholder-product.jpg"	width="240" height="240">
-							<figcaption>
-								<div class="thumb-overlay"><a href="item.html" title="More Info">
-									<i class="fas fa-search-plus"></i>
-								</a></div>
-							</figcaption>
-						</figure>
-						<h4><a href="item.html">Product Name</a></h4>
-						<p><span class="emphasis">$19.00</span></p>
-					</div>
-					<div class="col-sm-6 col-md-3 col-product">
-						<figure>
-							<img class="rounded-corners img-fluid" src="../assets/images/placeholder-product.jpg"	width="240" height="240">
-							<figcaption>
-								<div class="thumb-overlay"><a href="item.html" title="More Info">
-									<i class="fas fa-search-plus"></i>
-								</a></div>
-							</figcaption>
-						</figure>
-						<h4><a href="item.html">Product Name</a></h4>
-						<p><span class="emphasis">$19.00</span></p>
-					</div>
-					<div class="col-sm-6 col-md-3 col-product">
-						<figure>
-							<img class="rounded-corners img-fluid" src="../assets/images/placeholder-product.jpg"	width="240" height="240">
-							<figcaption>
-								<div class="thumb-overlay"><a href="item.html" title="More Info">
-									<i class="fas fa-search-plus"></i>
-								</a></div>
-							</figcaption>
-						</figure>
-						<h4><a href="item.html">Product Name</a></h4>
-						<p><span class="emphasis">$19.00</span></p>
-					</div>
+				</div>
+
+				<!-- HeyUI分页逻辑 -->
+				<div>
+					<Pagination v-model="pagination" @change="get_goods" align="center" layout="total, pager, jumper" small></Pagination>
 				</div>
 			</div>
 		</section>
@@ -151,8 +121,15 @@ export default {
     return {
       msg: "这是一个变量",
 	  // 幻灯片图片
-	  imgs: [
-	  ]
+	  imgs: [],
+	  // 商品列表
+	  goodslist: [],
+	  // 分页器变量
+	  pagination: {
+		  page: 1,
+		  size: 2,
+		  total: 3
+	  },
     }
   },
   
@@ -164,9 +141,23 @@ export default {
 
   mounted:function(){
 	  this.get_carousel();
+
+	  this.get_goods();
   },
 
   methods:{
+	  // 获取商品
+	  get_goods: function () {
+		  // 发送请求
+		  this.axios.get('http://localhost:8000/goodslist/',{params: {
+			  page: this.pagination.page,
+			  size: this.pagination.size
+		  }}).then((result) => {
+			  console.log(result);
+			  this.goodslist = result.data.data;
+		  })
+	  },
+
 	  // 获取轮播图接口
 	  get_carousel: function () {
 		  // 发送请求

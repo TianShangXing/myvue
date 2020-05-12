@@ -96,7 +96,8 @@ export default {
 		// 商品分类
 		category: [],
 		// 分类默认选中
-		selected: '衣服'
+		selected: '衣服',
+		goods_dict: {}
     }
   },
 
@@ -124,6 +125,9 @@ export default {
 			  // 二次处理
 			  for (let i=0; i<result.data.length; i++) {
 				  mycate.push(result.data[i]['name'])
+
+				  // 反向赋值
+				  this.goods_dict[result.data[i]['name']] = result.data[i]['id']
 			  }
 			  // 赋值
 			  this.category = mycate
@@ -131,6 +135,12 @@ export default {
 	  },
 
 	  submit: function () {
+		  console.log(this.selected);
+
+		  console.log(this.goods_dict[this.selected]);
+
+		  // return false;
+
 		  // 将普通字段转换为json
 		  var param = {};
 		  param['color'] = this.color;
@@ -149,7 +159,8 @@ export default {
 		  	{params: {
 			  name: this.name,
 			  price: this.price,
-			  params: param
+			  params: param,
+			  cid: this.goods_dict[this.selected]
 			}}).then((result) =>{
 				console.log(result);
 			this.$Message(result.data.message);
