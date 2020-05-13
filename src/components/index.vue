@@ -65,7 +65,7 @@
 					<div v-for="item in goodslist" class="col-sm-6 col-md-3 col-product">
 						<figure>
 							<img class="rounded-corners img-fluid" :src="'http://localhost:8000/static/upload/' + item.img"	width="240" height="240">
-							<video class="rounded-corners img-fluid" :src="'http://localhost:8000/static/upload/' + item.video" width="240" height="240" autoplay="autoplay" controls="controls"></video>
+							<!-- <video class="rounded-corners img-fluid" :src="'http://localhost:8000/static/upload/' + item.video" width="240" height="240" autoplay="autoplay" controls="controls"></video> -->
 							<figcaption>
 								<div class="thumb-overlay"><a href="item.html" title="More Info">
 									<i class="fas fa-search-plus"></i>
@@ -80,6 +80,62 @@
 				<!-- HeyUI分页逻辑 -->
 				<div>
 					<Pagination v-model="pagination" @change="get_goods" align="center" layout="total, pager, jumper" small></Pagination>
+				</div>
+			</div>
+		</section>
+
+		<section class="products text-center">
+			<div class="container">
+				<h3 class="mb-4">商品列表</h3>
+				<div class="row">
+					<div v-for="item in goodslist_self" class="col-sm-6 col-md-3 col-product">
+						<figure>
+							<img class="rounded-corners img-fluid" :src="'http://localhost:8000/static/upload/' + item.img"	width="240" height="240">
+							<!-- <video class="rounded-corners img-fluid" :src="'http://localhost:8000/static/upload/' + item.video" width="240" height="240" autoplay="autoplay" controls="controls"></video> -->
+							<figcaption>
+								<div class="thumb-overlay"><a href="item.html" title="More Info">
+									<i class="fas fa-search-plus"></i>
+								</a></div>
+							</figcaption>
+						</figure>
+						<h4><a :href="'http://localhost:8080/item?id=' + item.id">{{ item.name }}</a></h4>
+						<p><span class="emphasis">${{ item.price }}</span></p>
+					</div>
+				</div>
+
+				<!-- 自主分页逻辑 -->
+				<div>
+					<a @click="get_goods_self(page)">首页</a>
+					&nbsp;&nbsp;
+					<Button v-show="last_page" @click="get_goods_self(last_page)">上一页</Button>
+					&nbsp;&nbsp;
+
+					<!-- <span v-for="index in allpage">
+						<a @click="get_goods_self(index)">{{ index }}&nbsp;&nbsp;</a>
+					</span> -->
+
+					<span v-for="item in lastpage">
+						<a @click="get_goods_self(item)">{{ item }}&nbsp;&nbsp;</a>
+					</span>
+
+					<a @click="get_goods_self(page)">{{ page }}&nbsp;&nbsp;</a>
+
+					<span v-for="item in nextpage">
+						<a @click="get_goods_self(item)">{{ item }}&nbsp;&nbsp;</a>
+					</span>
+
+					&nbsp;&nbsp;
+					<Button  v-show="next_page" @click="get_goods_self(next_page)">下一页</Button>
+					&nbsp;&nbsp;
+					<a @click="get_goods_self(allpage)">尾页</a>
+
+					<div>
+						<Button color="green" @click="get_goods_self(page,'id','-')">id倒序</Button>
+						<Button color="green" @click="get_goods_self(page,'create_time','')">创建时间正序</Button>
+						<Button color="green" @click="get_goods_self(page,'create_time','-')">创建时间倒序</Button>
+						<Button color="green" @click="get_goods_self(page,'price','')">价格正序</Button>
+						<Button color="green" @click="get_goods_self(page,'price','-')">价格倒序</Button>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -126,10 +182,30 @@ export default {
 	  goodslist: [],
 	  // 分页器变量
 	  pagination: {
+		  // 当前页
 		  page: 1,
+		  // 每页展示多少个
 		  size: 2,
+		  // 总数
 		  total: 3
 	  },
+	  // 自主商品列表
+	  goodslist_self: [],
+	  // 总数
+	  total_self: 0,
+	  // 上一页
+	  last_page: 0,
+	  // 下一页
+	  next_page: 0,
+	  // 当前页
+	  page: 1,
+	  // 每页展示数量
+	  size: 1,
+	  // 总页数
+	  allpage: 0,
+	  // 分页偏移
+	  lastpage: [],
+	  nextpage: []
     }
   },
   
@@ -143,6 +219,8 @@ export default {
 	  this.get_carousel();
 
 	  this.get_goods();
+
+	  this.get_goods_self(1);
   },
 
   methods:{
@@ -151,10 +229,70 @@ export default {
 		  // 发送请求
 		  this.axios.get('http://localhost:8000/goodslist/',{params: {
 			  page: this.pagination.page,
-			  size: this.pagination.size
+			  size: this.pagination.size,
 		  }}).then((result) => {
 			  console.log(result);
 			  this.goodslist = result.data.data;
+			  this.pagination.total = result.data.total;
+		  })
+	  },
+
+	  // 自主分页
+	  get_goods_self: function (page, coloum, order) {
+		  this.page = page;
+		  // 发送请求
+		  this.axios.get('http://localhost:8000/goodslist/',{params: {
+			  page: page,
+			  size: this.size,
+			  coloum: coloum,
+			  order: order
+		  }}).then((result) => {
+			  console.log(result);
+			  this.goodslist_self = result.data.data;
+			  // 商品总数
+			  this.total_self = result.data.total;
+
+			  // 判断上一页
+			  if (page == 1) {
+				  this.last_page = 0;
+			  } else {
+				  this.last_page = page - 1;  
+			  }
+
+			  // 计算总页数
+			  this.allpage = Math.ceil(this.total_self / this.size);
+
+			  // 判断下一页
+			  if (page == this.allpage) {
+				  this.next_page = 0;
+			  } else {
+				  this.next_page = page + 1;
+			  }
+
+			  // 设置偏移量
+			  var move_page = 2;
+
+			  var my_last = []
+
+			  // 计算左侧偏移量
+			  for (let i=page-move_page; i<page; i++){
+				  if (i > 0){
+					  my_last.push(i);
+				  }	  
+			  }
+			  console.log(my_last);
+			  
+			  // 计算右侧偏移量
+			  var my_next = []
+			  for (let i=page+1; i<=page+move_page; i++){
+				  if (i <= this.allpage){
+					  my_next.push(i);
+				  }	  
+			  }
+			  console.log(my_next);
+
+			  this.lastpage = my_last;
+			  this.nextpage = my_next;
 		  })
 	  },
 
