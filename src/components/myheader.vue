@@ -85,7 +85,10 @@
                                 </div>
                             </li>
                             <li class="nav-item"><a class="nav-link" href="contact.html">{{ $t('m.contact') }}</a></li>
-                            <li class="nav-item dropdown"><input type="text" /></li>
+                            <li class="nav-item dropdown">
+                                <!-- 搜索功能 -->
+                                <Search @search="search" v-model="text"></Search>
+                            </li>
                             <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-shopping-cart"></i> <span class="badge badge-pill badge-primary">3</span></a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-cart" aria-labelledby="navbarDropdown">
                                     <h6>3 Items <span class="emphasis">$147.00</span></h6>
@@ -164,12 +167,24 @@ export default {
             // 语言开关变量 0:中文 1:英文
             lang: 0,
             // 颜色开关变量 0:白天模式 1:黑夜模式
-            col: 0
+            col: 0,
+            // 关键词变量
+            text: '',
+        }
+    },
+
+    // 监听属性
+    watch: {
+        $route (to, from) {
+            // 手动刷新
+            this.$router.go(0);
         }
     },
 
     // 钩子方法
     mounted() {
+        // 接收参数
+
         this.iflang();
 
         // this.change_back();
@@ -215,6 +230,15 @@ export default {
 
     // 自定义方法
     methods: {
+        // 检索方法
+        search: function () {
+            // 获取输入的关键词
+            console.log(this.text);
+
+            // 进行跳转操作 router：带参跳转
+            this.$router.push({path: '/search', query: {text: this.text}})
+        },
+
         // change_back: function () {
         //     // 获取样式表
         //     var styles = getComputedStyle(document.documentElement)

@@ -79,7 +79,7 @@
 
 				<!-- HeyUI分页逻辑 -->
 				<div>
-					<Pagination v-model="pagination" @change="get_goods" align="center" layout="total, pager, jumper" small></Pagination>
+					<Pagination v-model="pagination" @change="get_goods" align="center" layout="pager, jumper" small></Pagination>
 				</div>
 			</div>
 		</section>
@@ -128,6 +128,8 @@
 					<Button  v-show="next_page" @click="get_goods_self(next_page)">下一页</Button>
 					&nbsp;&nbsp;
 					<a @click="get_goods_self(allpage)">尾页</a>
+
+					<input type="text" @input="jump_page($event)" style="width: 50px;">
 
 					<div>
 						<Button color="green" @click="get_goods_self(page,'id','-')">id倒序</Button>
@@ -235,6 +237,17 @@ export default {
 			  this.goodslist = result.data.data;
 			  this.pagination.total = result.data.total;
 		  })
+	  },
+
+	  // 页面跳转
+	  jump_page: function (e) {
+		  var val = e.target.value;
+		  if (val > this.allpage) {
+			  this.$Message('您输入的页码有误');
+			  return false;
+		  }
+		  this.get_goods_self(val);
+		  console.log(val);
 	  },
 
 	  // 自主分页
