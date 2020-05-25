@@ -48,7 +48,30 @@
 					
 					<!--Quantity: <input type="text" class="form-control quantity mb-4" name="" value="1">-->
 					
-					<a href="#" class="btn btn-full-width btn-lg btn-outline-primary">Add to cart</a></div>
+					<a href="javascript:void(0)" @click="add_cart" class="btn btn-full-width btn-lg btn-outline-primary">Add to cart</a>
+					
+					<br><br>
+
+					<!-- 商品评论 -->
+
+					<textarea v-model="comment" rows="10" v-autosize v-wordcount="100">
+						
+
+					</textarea>
+
+					<br><br>
+
+					<Button @click="submit" color="blue">提交评论</Button>
+
+					<!-- 评论列表 -->
+					<ul>	
+						<li v-for="item in commentlist">
+
+						{{ change_uid(item.uid) }} 说:{{ item.content }}
+
+						</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -137,7 +160,15 @@ export default {
 		// 商品规格
 		param: {},
 		// 图片地址
-		mysrc: ''
+		mysrc: '',
+		// 评论内容
+		comment:'',
+		// 评论列表
+		commentlist:[],
+		// 用户名列表
+		users: {},
+		// 购物车列表
+		cartlist: []
     }
   },
 
@@ -148,15 +179,133 @@ export default {
   },
 
   mounted:function(){
-	  //获取商品id
+	  // 获取商品id
 	  this.id = this.$route.query.id;
 
-	  console.log(this.id);
+	//   console.log(this.id);
 
+	  // 获取商品信息
 	  this.get_good();
+
+	  // 获取商品评论
+	  this.get_comments();
+
+	  // 获取用户名列表
+	  this.get_users();
+		
+	  // 获取购物车列表
+	  this.init_cart();
   },
 
   methods:{
+	  // 初始化购物车
+	  init_cart: function () {
+		  var cartdata = localStorage.getItem('cart')
+		  
+		  if (cartdata == null) {
+			  this.cartlist = [];
+		  } else {
+			  this.cartlist = JSON.parse(cartdata)
+		  }
+	  },
+	  // 添加购物车
+	  add_cart: function () {
+		  // 默认购物车内没有商品
+		  let findgood = 0;
+
+		  for(let i=0; i<this.cartlist.length; i++) {
+			  if (this.info.name == this.cartlist[i]['name']) {
+				  this.cartlist[i]['num'] ++;
+				  // 声明找到了该商品
+				  findgood = 1;
+				  // 结束循环
+				  break;
+			  }
+		  }
+
+		  // 如果该商品没有在购物车
+		  if(findgood == 0) {
+			  this.cartlist.push({'name': this.info.name, 'price': this.info.price, 'num': 1, 'img': this.info.img});
+		  }
+
+		  console.log(this.cartlist)
+
+		  // 状态保持
+		  localStorage.setItem('cart', JSON.stringify(this.cartlist))
+	  },
+
+	  // 替换用户名
+  	  change_uid: function (uid) {
+
+  		return this.users[uid];
+
+	  },
+	  
+  	  // 获取用户名
+  	  get_users: function () {
+
+  	  //发送请求
+      this.axios.get('http://localhost:8000/getusers/').then((result) =>{
+
+        console.log(result);
+
+        //遍历
+        for(let i=0; i<result.data.length; i++){
+
+        	this.users[result.data[i]['id']] = result.data[i]['username'];
+
+		}
+		
+		console.log(this.users);
+		
+      	});
+	  },
+	  
+	  //获取商品评论
+  	  get_comments:function(){
+  		//发送请求
+     	this.axios.get('http://localhost:8000/commentlist/', {params: {
+			gid:this.id
+		}}).then((result) =>{
+
+        	console.log(result);
+
+		this.commentlist = result.data;
+		
+      	});
+	  },
+	  
+	  // 提交评论
+  	  submit: function () {
+  		if (this.comment == '') {
+  			this.$Message("评论不能为空");
+  			return false;
+  		}
+
+  		this.comment = this.comment.replace(/ /g,'');
+
+  		if (this.comment.length > 100) {
+  			this.$Message("超出了长度限制");
+  			return false;
+  		}
+
+  		//请求入库
+  		//发送请求
+		this.axios.post('http://localhost:8000/commentinsert/',this.qs.stringify({
+		  uid:localStorage.getItem("uid"),
+		  gid:this.id,
+		  content:this.comment
+		})).then((result) =>{
+        	console.log(result);
+		this.$Message(result.data.message);
+		
+		// this.get_comments();
+
+        // 添加评论数据
+        this.commentlist.unshift({'uid':localStorage.getItem("uid"),'content':this.comment});
+      	});
+  	  },
+
 	  // 更换大图
 	  changeimg: function (img) {
 		  console.log(img);

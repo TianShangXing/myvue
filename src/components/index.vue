@@ -105,7 +105,7 @@
 
 				<!-- 自主分页逻辑 -->
 				<div>
-					<a @click="get_goods_self(page)">首页</a>
+					<a @click="get_goods_self(1)">首页</a>
 					&nbsp;&nbsp;
 					<Button v-show="last_page" @click="get_goods_self(last_page)">上一页</Button>
 					&nbsp;&nbsp;
@@ -242,7 +242,7 @@ export default {
 	  // 页面跳转
 	  jump_page: function (e) {
 		  var val = e.target.value;
-		  if (val > this.allpage) {
+		  if (val > this.allpage || val < 0) {
 			  this.$Message('您输入的页码有误');
 			  return false;
 		  }

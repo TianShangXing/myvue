@@ -100,7 +100,7 @@ export default {
 	  myfilter: function (value) {
 		  console.log(window.that.text);
 
-		  value = value.replace(new RegExp(window.that.text, 'g'), '<span class="highlight">' + window.that.text + '</span>');
+		//   value = value.replace(new RegExp(window.that.text, 'g'), '<span class="highlight">' + window.that.text + '</span>');
 
 		  return value;
 	  }
@@ -110,7 +110,7 @@ export default {
 	  // 获取商品
 	  get_goods: function () {
 		  // 发送请求
-		  this.axios.get('http://localhost:8000/goodslist/',{params: {
+		  this.axios.get('http://localhost:8000/search/',{params: {
 			  page: this.pagination.page,
 			  size: this.pagination.size,
 			  text: this.text
@@ -120,7 +120,7 @@ export default {
 			//   for (let i=0; i<result.data.data.length; i++) {
 			// 	  result.data.data[i]['name'] = result.data.data[i]['name'].replace(new RegExp(this.text, 'g'), '<span class="highlight">' + this.text + '</span>')
 			//   }
-			//   console.log(result.data.data)
+			  console.log(result.data.data)
 
 			  this.goodslist = result.data.data;
 
